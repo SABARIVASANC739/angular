@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const bidSchema = new mongoose.Schema({
   auction: {
@@ -36,4 +36,4 @@ bidSchema.index({ auction: 1, bidTime: -1 });
 // Compound index for finding highest bid per auction
 bidSchema.index({ auction: 1, amount: -1, bidTime: -1 });
 
-module.exports = mongoose.model('Bid', bidSchema);
+export default mongoose.model('Bid', bidSchema);

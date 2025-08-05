@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const auctionSchema = new mongoose.Schema({
   title: {
@@ -84,4 +84,4 @@ auctionSchema.methods.isActive = function() {
          this.endTime > now;
 };
 
-module.exports = mongoose.model('Auction', auctionSchema);
+export default mongoose.model('Auction', auctionSchema);

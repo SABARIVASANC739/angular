@@ -1,10 +1,11 @@
-const express = require('express');
-const { body, param, query } = require('express-validator');
-const router = express.Router();
+import express from 'express';
+import { body, param, query } from 'express-validator';
 
 // Import controllers and middleware
-const bidController = require('../controllers/bidController');
-const { authenticateToken, requireRole } = require('../middleware/auth');
+import * as bidController from '../controllers/bidController.js';
+import { authenticateToken, requireRole } from '../middleware/auth.js';
+
+const router = express.Router();
 
 // Validation middleware
 const placeBidValidation = [
@@ -78,4 +79,4 @@ router.get('/:bidId',
   bidController.getBidHistory
 );
 
-module.exports = router;
+export default router;

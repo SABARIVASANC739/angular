@@ -1,10 +1,11 @@
-const express = require('express');
-const { body } = require('express-validator');
-const router = express.Router();
+import express from 'express';
+import { body } from 'express-validator';
 
 // Import controllers
-const authController = require('../controllers/authController');
-const { authenticateToken } = require('../middleware/auth');
+import * as authController from '../controllers/authController.js';
+import { authenticateToken } from '../middleware/auth.js';
+
+const router = express.Router();
 
 // Validation middleware
 const registerValidation = [
@@ -79,4 +80,4 @@ router.post('/login', loginValidation, authController.login);
 router.get('/profile', authenticateToken, authController.getProfile);
 router.put('/profile', authenticateToken, updateProfileValidation, authController.updateProfile);
 
-module.exports = router;
+export default router;

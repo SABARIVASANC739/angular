@@ -1,10 +1,11 @@
-const express = require('express');
-const { body, param, query } = require('express-validator');
-const router = express.Router();
+import express from 'express';
+import { body, param, query } from 'express-validator';
 
 // Import controllers and middleware
-const auctionController = require('../controllers/auctionController');
-const { authenticateToken, requireRole } = require('../middleware/auth');
+import * as auctionController from '../controllers/auctionController.js';
+import { authenticateToken, requireRole } from '../middleware/auth.js';
+
+const router = express.Router();
 
 // Validation middleware
 const createAuctionValidation = [
@@ -141,4 +142,4 @@ router.get('/user/my-auctions',
   auctionController.getUserAuctions
 );
 
-module.exports = router;
+export default router;

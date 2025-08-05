@@ -1,6 +1,6 @@
-const { validationResult } = require('express-validator');
-const Bid = require('../models/Bid');
-const Auction = require('../models/Auction');
+import { validationResult } from 'express-validator';
+import Bid from '../models/Bid.js';
+import Auction from '../models/Auction.js';
 
 const placeBid = async (req, res) => {
   try {
@@ -344,7 +344,7 @@ const getBidHistory = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   placeBid,
   getAuctionBids,
   getUserBids,

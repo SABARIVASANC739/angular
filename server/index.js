@@ -1,19 +1,19 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const dotenv = require('dotenv');
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import dotenv from 'dotenv';
 
 // Load environment variables
 dotenv.config();
 
 // Import database connection
-const connectDB = require('./config/database');
+import connectDB from './config/database.js';
 
 // Import route modules
-const authRoutes = require('./routes/auth');
-const auctionRoutes = require('./routes/auctions');
-const bidRoutes = require('./routes/bids');
+import authRoutes from './routes/auth.js';
+import auctionRoutes from './routes/auctions.js';
+import bidRoutes from './routes/bids.js';
 
 // Initialize Express app
 const app = express();
