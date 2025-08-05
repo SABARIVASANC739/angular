@@ -1,0 +1,125 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h2>Login</h2>
+      
+      <!-- Connection Status Indicator -->
+      <div class="connection-status" [ngClass]="connectionStatus">
+        <div *ngIf="connectionStatus === 'checking'" class="status-indicator checking">
+          <span class="spinner"></span>
+          <span>Checking server connection...</span>
+        </div>
+        <div *ngIf="connectionStatus === 'connected'" class="status-indicator connected">
+          <span class="icon">✓</span>
+          <span>Server connected</span>
+        </div>
+        <div *ngIf="connectionStatus === 'disconnected'" class="status-indicator disconnected">
+          <span class="icon">⚠</span>
+          <span>Server disconnected</span>
+          <button type="button" class="refresh-btn" (click)="onRefreshConnection()">
+            Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <form (ngSubmit)="onLogin()" class="login-form" #loginForm="ngForm">
+      <!-- Username Field -->
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          [(ngModel)]="loginDto.Name"
+          class="form-control"
+          placeholder="Enter your username"
+          autocomplete="username"
+          required
+          #usernameField="ngModel"
+        />
+        <div *ngIf="usernameField.invalid && usernameField.touched" class="error-message">
+          Username is required
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          [(ngModel)]="loginDto.Password"
+          class="form-control"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+          required
+          #passwordField="ngModel"
+        />
+        <div *ngIf="passwordField.invalid && passwordField.touched" class="error-message">
+          Password is required
+        </div>
+      </div>
+
+      <!-- Error Message Display -->
+      <div *ngIf="errorMessage" class="alert alert-error">
+        <div class="alert-content">
+          <span class="alert-icon">⚠</span>
+          <div class="alert-text">
+            <strong>Login Failed</strong>
+            <p>{{ errorMessage }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="isLoading || connectionStatus === 'disconnected' || !isFormValid()"
+          [class.loading]="isLoading"
+        >
+          <span *ngIf="!isLoading">Login</span>
+          <span *ngIf="isLoading" class="loading-content">
+            <span class="spinner"></span>
+            Logging in...
+          </span>
+        </button>
+
+        <button
+          *ngIf="showRetryButton"
+          type="button"
+          class="btn btn-secondary"
+          (click)="onRetry()"
+          [disabled]="retryAttempts >= maxRetryAttempts"
+        >
+          <span *ngIf="retryAttempts < maxRetryAttempts">
+            Retry ({{ retryAttempts }}/{{ maxRetryAttempts }})
+          </span>
+          <span *ngIf="retryAttempts >= maxRetryAttempts">
+            Max retries reached
+          </span>
+        </button>
+      </div>
+
+      <!-- Registration Link -->
+      <div class="form-footer">
+        <p>Don't have an account? <a routerLink="/register">Sign up here</a></p>
+      </div>
+
+      <!-- Server Status Help -->
+      <div *ngIf="connectionStatus === 'disconnected'" class="server-help">
+        <h4>Server Connection Issues</h4>
+        <p>The authentication server is not responding.</p>
+        <ul>
+          <li>Ensure your backend server is running</li>
+          <li>Check if the server is listening on the correct port</li>
+          <li>Verify your firewall settings</li>
+          <li>Make sure the API endpoint is available</li>
+        </ul>
+      </div>
+    </form>
+  </div>
+</div>
