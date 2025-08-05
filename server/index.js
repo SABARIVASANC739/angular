@@ -170,9 +170,9 @@ const startServer = async () => {
 };
 
 // Start the server if this file is run directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   startServer();
 }
 
 // Export app for testing
-module.exports = app;
+export default app;
