@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Angular Routing Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .route-test { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+        .success { background-color: #d4edda; }
+        .error { background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>Angular Routing Test Results</h1>
+    <p>Testing all routes in the Angular Online Auction Management application:</p>
+    
+    <div class="route-test">
+        <strong>Route: /</strong> (Home) - <span id="home-status">Testing...</span>
+    </div>
+    
+    <div class="route-test">
+        <strong>Route: /auctions</strong> (Auction List) - <span id="auctions-status">Testing...</span>
+    </div>
+    
+    <div class="route-test">
+        <strong>Route: /auction/1</strong> (Auction Detail) - <span id="auction-detail-status">Testing...</span>
+    </div>
+    
+    <div class="route-test">
+        <strong>Route: /create-auction</strong> (Create Auction) - <span id="create-auction-status">Testing...</span>
+    </div>
+    
+    <div class="route-test">
+        <strong>Route: /my-bids</strong> (My Bids) - <span id="my-bids-status">Testing...</span>
+    </div>
+    
+    <div class="route-test">
+        <strong>Route: /profile</strong> (Profile) - <span id="profile-status">Testing...</span>
+    </div>
+
+    <script>
+        // Test each route
+        const routes = [
+            { path: '', id: 'home-status' },
+            { path: 'auctions', id: 'auctions-status' },
+            { path: 'auction/1', id: 'auction-detail-status' },
+            { path: 'create-auction', id: 'create-auction-status' },
+            { path: 'my-bids', id: 'my-bids-status' },
+            { path: 'profile', id: 'profile-status' }
+        ];
+
+        routes.forEach(route => {
+            fetch(`http://localhost:4200/${route.path}`)
+                .then(response => {
+                    const element = document.getElementById(route.id);
+                    if (response.ok) {
+                        element.textContent = 'SUCCESS';
+                        element.parentElement.classList.add('success');
+                    } else {
+                        element.textContent = `ERROR: ${response.status}`;
+                        element.parentElement.classList.add('error');
+                    }
+                })
+                .catch(error => {
+                    const element = document.getElementById(route.id);
+                    element.textContent = `ERROR: ${error.message}`;
+                    element.parentElement.classList.add('error');
+                });
+        });
+    </script>
+</body>
+</html>
