@@ -1,0 +1,360 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h2>Login</h2>
+      
+      <!-- Connection Status Indicator -->
+      <div class="connection-status" [ngClass]="connectionStatus">
+        <div *ngIf="connectionStatus === 'checking'" class="status-indicator checking">
+          <span class="spinner"></span>
+          <span>Checking server connection...</span>
+        </div>
+        <div *ngIf="connectionStatus === 'connected'" class="status-indicator connected">
+          <span class="icon">✓</span>
+          <span>Server connected</span>
+        </div>
+        <div *ngIf="connectionStatus === 'disconnected'" class="status-indicator disconnected">
+          <span class="icon">⚠</span>
+          <span>Server disconnected</span>
+          <button type="button" class="refresh-btn" (click)="onRefreshConnection()">
+            Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="login-form">
+      <!-- Username Field -->
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          formControlName="username"
+          class="form-control"
+          [class.error]="isFieldInvalid('username')"
+          placeholder="Enter your username"
+          autocomplete="username"
+        />
+        <div *ngIf="isFieldInvalid('username')" class="error-message">
+          {{ getFieldError('username') }}
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          class="form-control"
+          [class.error]="isFieldInvalid('password')"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+        />
+        <div *ngIf="isFieldInvalid('password')" class="error-message">
+          {{ getFieldError('password') }}
+        </div>
+      </div>
+
+      <!-- Error Message Display -->
+      <div *ngIf="errorMessage" class="alert alert-error">
+        <div class="alert-content">
+          <span class="alert-icon">⚠</span>
+          <div class="alert-text">
+            <strong>Login Failed</strong>
+            <p>{{ errorMessage }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="isLoading || connectionStatus === 'disconnected'"
+          [class.loading]="isLoading"
+        >
+          <span *ngIf="!isLoading">Login</span>
+          <span *ngIf="isLoading" class="loading-content">
+            <span class="spinner"></span>
+            Logging in...
+          </span>
+        </button>
+
+        <button
+          *ngIf="showRetryButton"
+          type="button"
+          class="btn btn-secondary"
+          (click)="onRetry()"
+          [disabled]="retryAttempts >= maxRetryAttempts"
+        >
+          <span *ngIf="retryAttempts < maxRetryAttempts">
+            Retry ({{ retryAttempts }}/{{ maxRetryAttempts }})
+          </span>
+          <span *ngIf="retryAttempts >= maxRetryAttempts">
+            Max retries reached
+          </span>
+        </button>
+      </div>
+
+      <!-- Server Status Help -->
+      <div *ngIf="connectionStatus === 'disconnected'" class="server-help">
+        <h4>Server Connection Issues</h4>
+        <p>The authentication server at <code>http://localhost:7022</code> is not responding.</p>
+        <ul>
+          <li>Ensure your backend server is running</li>
+          <li>Check if the server is listening on port 7022</li>
+          <li>Verify your firewall settings</li>
+          <li>Make sure the API endpoint <code>/api/Auth/user-login</code> is available</li>
+        </ul>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 20px;
+}
+
+.login-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-header h2 {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.connection-status {
+  margin-bottom: 1rem;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.status-indicator.checking {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-indicator.connected {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-indicator.disconnected {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #333;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.refresh-btn {
+  background: none;
+  border: 1px solid currentColor;
+  color: inherit;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.refresh-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.form-control.error {
+  border-color: #dc3545;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.alert {
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.alert-error {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+.alert-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.alert-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.alert-text strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.alert-text p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #545b62;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.server-help {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border-left: 4px solid #007bff;
+}
+
+.server-help h4 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+  font-size: 1rem;
+}
+
+.server-help p {
+  margin: 0 0 0.5rem 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.server-help ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.server-help li {
+  margin-bottom: 0.25rem;
+}
+
+.server-help code {
+  background-color: #e9ecef;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+}
+</style>
